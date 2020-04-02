@@ -1,0 +1,14 @@
+<h1>Create a new Geo Mark</h1>
+<%= form_for(@geo_mark) do |f| %>
+    <%= f.label :description %>
+    <%= f.text_field :description %>
+    <br/>
+    <br/>
+    <%= f.label :latitude %>
+    <%= f.text_field :latitude %>
+    <%= f.label :longtitude %>
+    <%= f.text_field :longtitude %>
+    <br/>
+    <%= f.check_box :public %>
+    <%= f.submit "Publish Geo Mark" %>
+<% end %>

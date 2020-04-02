@@ -1,0 +1,50 @@
+<h1>Welcome to my shitty website, I hope you hate it because I do</h1>
+<%
+    my_geo_marks_marker_settings = {
+        icon_url: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+        icon_size:     [38, 95], # size of the icon
+        shadow_size:   [50, 64], # size of the shadow
+        icon_anchor:   [22, 94], # point of the icon which will correspond to marker's location
+        shadow_anchor: [4, 62],  # the same for the shadow
+        popup_anchor:  [-3, -76]
+    }
+    my_sharing_settings = {
+        icon_url: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-violet.png',
+        icon_size:     [25, 95], # size of the icon
+        shadow_size:   [50, 64], # size of the shadow
+        icon_anchor:   [22, 94], # point of the icon which will correspond to marker's location
+        shadow_anchor: [4, 62],  # the same for the shadow
+        popup_anchor:  [-3, -76]
+    }
+    geo_marks_markers = @geo_marks.map do |geo_mark|
+        desc = "<strong>#{geo_mark.description || "N/A"}</strong>"
+        button_like = button_to("Like", {controller: 'geo_marks', action: 'upvote', id: geo_mark.id })
+        button_share = button_to("Share", {controller: 'geo_marks', action: 'share', id: geo_mark.id }) if geo_mark.user.email != current_user.email
+        number_of_likes = "#{geo_mark.get_upvotes.size} likes"
+        created_by = geo_mark.user.email
+        created_time_diff_string = "Marked #{distance_of_time_in_words(Time.now, geo_mark.created_at)} ago"
+        items = [desc, number_of_likes, button_like, button_share,created_by, created_time_diff_string]
+        { latlng: [geo_mark.latitude, geo_mark.longtitude], popup: items.join("<br/>"), icon: my_geo_marks_marker_settings  }
+    end
+    shares = @geo_marks_user_shared.map do |share|
+        desc = "<strong>#{share[:geo_mark].description || "N/A"}</strong>"
+        share_text = "<p>Posted originally by #{share[:user].email}</p>"
+        button = button_to("Like", {controller: 'geo_marks', action: 'upvote', id: share[:geo_mark].id })
+        number_of_likes = "#{share[:geo_mark].get_upvotes.size} likes"
+        created_time_diff_string = "Marked #{distance_of_time_in_words(Time.now, share[:geo_mark].created_at)} ago"
+        items = [desc, share_text, number_of_likes, button, created_time_diff_string]
+        { latlng: [share[:geo_mark].latitude, share[:geo_mark].longtitude], popup: items.join("<br/>"), icon: my_sharing_settings }
+    end
+    markers = geo_marks_markers + shares
+%>
+<%=
+    map(:center => {
+            :latlng => [32.067483, 34.785207],
+            :zoom => 16
+        },
+        :markers => markers,
+        :attribution => "Created with hate - fuck ruby on rails",
+    )
+%>
+
+<%= link_to new_geo_mark_path %>

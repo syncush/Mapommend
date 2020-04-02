@@ -1,0 +1,25 @@
+<h1>This is a shitty show page</h1>
+<%
+    item = @geo_mark
+    desc = "<strong>#{item.description || "N/A"}</strong>"
+    button = button_to("Like", {controller: 'geo_marks', action: 'upvote', id: item.id })
+    number_of_likes = "#{item.get_upvotes.size} likes"
+    items = [desc, number_of_likes, button]
+    item = { latlng: [item.latitude, item.longtitude], popup: items.join("<br/>") }
+    user = @geo_mark.user
+    email = user.email
+    memeber_since = distance_of_time_in_words(Time.now, user.created_at)
+%>
+<%=
+    map(:center => {
+        :latlng => [32.067483, 34.785207],
+        :zoom => 18
+        },
+        :markers => [item],
+        :attribution => "Created with hate - fuck ruby on rails",
+    )
+%>
+<h2>User Details<h2>
+<hr/>
+<p>email: <%= email %></p>
+<p>Member since: <%= memeber_since %></p>
